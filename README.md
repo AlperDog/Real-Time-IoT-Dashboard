@@ -12,6 +12,8 @@ A modern, scalable real-time dashboard for IoT data visualization and analytics 
 - **Real-time Alerts**: Configurable threshold-based notifications
 - **Device Management**: IoT device configuration and monitoring
 - **Docker Support**: Complete containerization with Docker Compose
+- **TypeScript**: Full type safety across frontend and backend
+- **Hot Reload**: Development environment with automatic reloading
 
 ## 🛠 Tech Stack
 
@@ -24,6 +26,7 @@ A modern, scalable real-time dashboard for IoT data visualization and analytics 
 - **React Query** for data fetching
 - **Framer Motion** for animations
 - **React Router** for navigation
+- **@heroicons/react** for icons
 
 ### Backend
 
@@ -32,8 +35,16 @@ A modern, scalable real-time dashboard for IoT data visualization and analytics 
 - **Socket.io** for real-time communication
 - **Redis** for caching and pub/sub
 - **MongoDB** for data persistence
-- **JWT** for authentication
+- **JWT** for authentication (ready for implementation)
 - **CORS** and rate limiting middleware
+- **Nodemon** for development
+
+### Infrastructure
+
+- **Docker** and **Docker Compose** for containerization
+- **MongoDB 6.0** for database
+- **Redis 7-alpine** for caching
+- **Multi-stage builds** for optimized containers
 
 ## 📊 Dashboard Components
 
@@ -42,15 +53,15 @@ A modern, scalable real-time dashboard for IoT data visualization and analytics 
 3. **Analytics Panel**: Statistical analysis and trend visualization
 4. **Alert System**: Real-time notifications and alert management
 5. **Device Management**: IoT device configuration and status monitoring
+6. **Real-time Controls**: Start/stop simulation and test data generation
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- Docker and Docker Compose (recommended)
-- MongoDB
-- Redis
+- **Docker** and **Docker Compose** (recommended)
+- Node.js 18+ (for local development)
+- Git
 
 ### Option 1: Docker (Recommended)
 
@@ -64,15 +75,22 @@ cd Real-Time-IoT-Dashboard
 2. **Start with Docker Compose**
 
 ```bash
+# Start all services
 docker-compose up --build
+
+# Or use Docker Compose Watch for development
+docker compose watch
 ```
+
+3. **Access the application**
 
 The application will be available at:
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
-- MongoDB: localhost:27017
-- Redis: localhost:6379
+- **Frontend Dashboard**: http://localhost:3000
+- **Backend API**: http://localhost:3001
+- **API Health Check**: http://localhost:3001/health
+- **MongoDB**: localhost:27017
+- **Redis**: localhost:6379
 
 ### Option 2: Manual Setup
 
@@ -95,9 +113,11 @@ cd ../frontend && npm install
 
 3. **Environment Setup**
 
+Create environment files:
+
 ```bash
 # Backend
-cp backend/env.example backend/.env
+cp backend/.env.example backend/.env
 # Edit backend/.env with your configuration
 
 # Frontend
@@ -112,7 +132,7 @@ cp frontend/.env.example frontend/.env
 npm run dev
 
 # Start frontend (from frontend directory)
-npm run dev
+npm start
 ```
 
 ## 📁 Project Structure
@@ -130,28 +150,40 @@ Real-Time-IoT-Dashboard/
 │   │   │   ├── DeviceStatus.tsx
 │   │   │   └── AlertList.tsx
 │   │   ├── pages/          # Page components
+│   │   │   └── Dashboard.tsx
 │   │   ├── hooks/          # Custom React hooks
+│   │   │   └── useSocket.ts
 │   │   ├── services/       # API and WebSocket services
-│   │   ├── types/          # TypeScript type definitions
-│   │   └── utils/          # Utility functions
+│   │   │   └── api.ts
+│   │   ├── sharedTypes.ts  # TypeScript type definitions
+│   │   └── App.tsx         # Main application component
 │   ├── public/             # Static assets
 │   ├── Dockerfile          # Frontend container configuration
 │   └── package.json        # Frontend dependencies
 ├── backend/                 # Node.js backend API
 │   ├── src/
-│   │   ├── controllers/    # Route controllers
-│   │   ├── models/         # Database models
 │   │   ├── routes/         # API routes
+│   │   │   ├── devices.ts
+│   │   │   ├── sensors.ts
+│   │   │   ├── alerts.ts
+│   │   │   ├── analytics.ts
+│   │   │   ├── dashboard.ts
+│   │   │   └── auth.ts
 │   │   ├── services/       # Business logic and mock data
+│   │   │   ├── mockDataService.ts
+│   │   │   └── realTimeDataService.ts
 │   │   ├── middleware/     # Custom middleware
-│   │   └── utils/          # Utility functions
+│   │   │   ├── errorHandler.ts
+│   │   │   └── notFound.ts
+│   │   ├── config/         # Configuration files
+│   │   │   ├── database.ts
+│   │   │   └── redis.ts
+│   │   ├── sharedTypes.ts  # Shared TypeScript types
+│   │   ├── socket.ts       # Socket.IO configuration
+│   │   └── index.ts        # Main server file
 │   ├── Dockerfile          # Backend container configuration
 │   └── package.json        # Backend dependencies
-├── shared/                 # Shared types and utilities
-│   └── types/              # Common TypeScript types
 ├── docker-compose.yml      # Multi-container setup
-├── start.sh               # Linux/Mac startup script
-├── start-project.bat      # Windows startup script
 └── README.md              # Project documentation
 ```
 
@@ -163,18 +195,18 @@ Real-Time-IoT-Dashboard/
 
 ```env
 PORT=3001
-MONGODB_URI=mongodb://localhost:27017/iot-dashboard
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your-jwt-secret
+MONGODB_URI=mongodb://mongodb:27017/iot-dashboard
+REDIS_URL=redis://redis:6379
+JWT_SECRET=your-jwt-secret-key
 NODE_ENV=development
-CORS_ORIGIN=http://localhost:3000
+FRONTEND_URL=http://localhost:3000
 ```
 
 **Frontend (.env)**
 
 ```env
 REACT_APP_API_URL=http://localhost:3001
-REACT_APP_WS_URL=ws://localhost:3001
+REACT_APP_WS_URL=http://localhost:3001
 REACT_APP_ENV=development
 ```
 
@@ -182,94 +214,166 @@ REACT_APP_ENV=development
 
 ### Real-time Data Streaming
 
-- WebSocket connection for live data updates
-- Automatic reconnection handling
-- Data buffering for offline scenarios
-- Mock IoT device simulation
+- **WebSocket Connection**: Live data updates via Socket.IO
+- **Automatic Reconnection**: Handles connection drops gracefully
+- **Data Buffering**: Offline scenario support
+- **Mock IoT Simulation**: Realistic sensor data generation
+- **Simulation Controls**: Start/stop real-time data simulation
 
 ### Interactive Charts
 
-- Line charts for time-series data
-- Bar charts for categorical data
-- Gauge charts for sensor readings
-- Real-time data updates
+- **Line Charts**: Time-series data visualization
+- **Gauge Charts**: Sensor readings with thresholds
+- **Real-time Updates**: Live chart updates
+- **Responsive Design**: Mobile-friendly charts
 
 ### Analytics & Insights
 
-- Real-time statistical calculations
-- Trend analysis and predictions
-- Data export functionality
-- Custom date range filtering
+- **Real-time Statistics**: Live dashboard metrics
+- **Device Status Monitoring**: Online/offline device tracking
+- **Alert Management**: Configurable alert thresholds
+- **Data Trends**: Historical data analysis
 
-### Alert System
+### Device Management
 
-- Configurable threshold-based alerts
-- Real-time notifications
-- Alert history and management
-- Device status monitoring
+- **Device Status**: Real-time device health monitoring
+- **Battery Levels**: Device battery monitoring
+- **Location Tracking**: Device location information
+- **Status Indicators**: Visual status representation
 
-## 🧪 Testing
+## 🚀 API Endpoints
+
+### Dashboard
+
+- `GET /api/dashboard/stats` - Dashboard statistics
+
+### Devices
+
+- `GET /api/devices` - Get all devices
+- `GET /api/devices/:id` - Get device by ID
+
+### Sensors
+
+- `GET /api/sensors/data` - Get sensor data
+- `GET /api/sensors/realtime` - Get real-time sensor data
+
+### Alerts
+
+- `GET /api/alerts` - Get all alerts
+- `GET /api/alerts/:id` - Get alert by ID
+
+### Analytics
+
+- `GET /api/analytics` - Get analytics data
+
+### Health Check
+
+- `GET /health` - Application health status
+
+## 🔌 WebSocket Events
+
+### Client to Server
+
+- `join-dashboard` - Join dashboard room
+- `join-device` - Listen to specific device
+- `leave-device` - Stop listening to device
+- `request-test-data` - Request test data
+- `start-simulation` - Start data simulation
+- `stop-simulation` - Stop data simulation
+- `ping` - Connection test
+
+### Server to Client
+
+- `dashboard-init` - Dashboard initialization
+- `sensor_data_update` - Real-time sensor data
+- `device_status_update` - Device status changes
+- `alert_update` - New alert notifications
+- `simulation_status` - Simulation status update
+- `pong` - Connection test response
+
+## 🐳 Docker Commands
 
 ```bash
-# Backend tests
-cd backend && npm test
+# Start all services
+docker-compose up --build
 
-# Frontend tests
-cd frontend && npm test
+# Start in background
+docker-compose up -d
 
-# Run test script
-node test-project.js
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Rebuild containers
+docker-compose build --no-cache
+
+# Restart specific service
+docker-compose restart backend
+
+# View running containers
+docker-compose ps
 ```
+
+## 🧪 Development
+
+### Available Scripts
+
+**Backend:**
+
+```bash
+npm run dev          # Start development server with nodemon
+npm run build        # Build TypeScript
+npm run start        # Start production server
+npm run test         # Run tests
+```
+
+**Frontend:**
+
+```bash
+npm start            # Start development server
+npm run build        # Build for production
+npm run test         # Run tests
+npm run eject        # Eject from Create React App
+```
+
+### Hot Reload
+
+The development environment includes hot reload for both frontend and backend:
+
+- **Frontend**: React development server with hot reload
+- **Backend**: Nodemon with TypeScript support
+- **Docker**: Volume mounts for live code updates
 
 ## 🚀 Deployment
 
-### Docker Deployment (Recommended)
+### Production Build
 
 ```bash
-# Build and run with Docker Compose
-docker-compose up --build
+# Build production images
+docker-compose -f docker-compose.prod.yml build
 
-# Run in background
-docker-compose up -d --build
-
-# Stop services
-docker-compose down
+# Start production services
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-### Manual Deployment
+### Environment Variables for Production
 
-```bash
-# Build frontend
-cd frontend && npm run build
-
-# Start backend in production
-cd backend && npm start
-```
-
-## 🔄 Development Workflow
-
-### Using Docker Compose Watch (Hot Reload)
-
-```bash
-# Start with file watching for development
-docker-compose watch
-```
-
-### Manual Development
-
-```bash
-# Backend development
-cd backend && npm run dev
-
-# Frontend development
-cd frontend && npm run dev
+```env
+NODE_ENV=production
+PORT=3001
+MONGODB_URI=mongodb://your-mongodb-uri
+REDIS_URL=redis://your-redis-uri
+JWT_SECRET=your-production-jwt-secret
+FRONTEND_URL=https://your-domain.com
 ```
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
@@ -279,16 +383,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Chart.js for excellent charting library
-- Socket.io for real-time communication
-- Tailwind CSS for utility-first styling
-- React Query for server state management
-- Framer Motion for smooth animations
+- **React** team for the amazing frontend framework
+- **Node.js** community for the robust backend runtime
+- **Socket.IO** for real-time communication
+- **Chart.js** for data visualization
+- **Tailwind CSS** for utility-first styling
 
 ## 📞 Support
 
-For support and questions, please open an issue on GitHub or contact the maintainers.
+If you have any questions or need help:
+
+- Create an issue on GitHub
+- Check the documentation
+- Review the code examples
 
 ---
 
-**Built with ❤️ for VIZIO AI FullStack Developer Interview**
+**Built with ❤️ for IoT enthusiasts and developers**
