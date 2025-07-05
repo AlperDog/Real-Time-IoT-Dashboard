@@ -24,7 +24,7 @@ export function errorHandler(
       body: req.body,
       params: req.params,
       query: req.query,
-      user: req.user
+      user: (req as any).user
     });
   }
 

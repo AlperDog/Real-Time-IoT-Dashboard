@@ -1,33 +1,63 @@
 import { Router } from 'express';
-import { ApiResponse } from '../../shared/types';
+import { ApiResponse, AnalyticsData } from '../sharedTypes';
 
 const router = Router();
 
 // Get analytics data
-router.get('/:deviceId', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const { deviceId } = req.params;
-    const { period = 'day' } = req.query;
+    const { period = '24h' } = req.query;
     
-    const analyticsData = {
-      deviceId,
-      period,
-      metrics: [],
-      trends: [],
-      summary: {
-        totalDevices: 0,
-        onlineDevices: 0,
-        totalAlerts: 0,
-        activeAlerts: 0,
-        dataPoints: 0,
-        uptime: 0
+    // TODO: Implement analytics service
+    const analyticsData: AnalyticsData = {
+      period: period as string,
+      temperature: {
+        min: 18.5,
+        max: 26.8,
+        average: 22.3,
+        data: []
+      },
+      humidity: {
+        min: 35.2,
+        max: 68.9,
+        average: 45.7,
+        data: []
+      },
+      alerts: {
+        total: 5,
+        bySeverity: {
+          low: 2,
+          medium: 2,
+          high: 1,
+          critical: 0
+        },
+        byDevice: {
+          'temp-001': 2,
+          'hum-001': 1,
+          'motion-001': 2
+        }
+      },
+      devices: {
+        total: 10,
+        byStatus: {
+          online: 8,
+          offline: 1,
+          error: 1,
+          maintenance: 0
+        },
+        byType: {
+          temperature_sensor: 4,
+          humidity_sensor: 3,
+          motion_sensor: 2,
+          light_sensor: 1
+        }
       }
     };
     
     const response: ApiResponse = {
       success: true,
       data: analyticsData,
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     };
     
     res.json(response);
@@ -35,7 +65,7 @@ router.get('/:deviceId', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch analytics data',
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     });
   }
 });

@@ -1,4 +1,4 @@
-import { IoTDevice, SensorData, Alert, DeviceStatus, SensorType, AlertType, AlertSeverity } from '../../shared/types';
+import { IoTDevice, SensorData, Alert, DeviceStatus, SensorType, AlertSeverity, AlertStatus } from '../sharedTypes';
 
 // Mock IoT Devices
 export const mockDevices: IoTDevice[] = [
@@ -6,17 +6,9 @@ export const mockDevices: IoTDevice[] = [
     id: 'temp-001',
     name: 'Temperature Sensor 1',
     type: 'temperature_sensor' as any,
-    location: {
-      latitude: 41.0082,
-      longitude: 28.9784,
-      address: 'Istanbul, Turkey',
-      room: 'Room 101',
-      building: 'Main Building'
-    },
+    location: 'Room 101, Main Building, Istanbul',
     status: DeviceStatus.ONLINE,
     lastSeen: new Date(),
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
     metadata: {
       manufacturer: 'Sensirion',
       model: 'SHT30',
@@ -27,17 +19,9 @@ export const mockDevices: IoTDevice[] = [
     id: 'hum-001',
     name: 'Humidity Sensor 1',
     type: 'humidity_sensor' as any,
-    location: {
-      latitude: 41.0082,
-      longitude: 28.9784,
-      address: 'Istanbul, Turkey',
-      room: 'Room 101',
-      building: 'Main Building'
-    },
+    location: 'Room 101, Main Building, Istanbul',
     status: DeviceStatus.ONLINE,
     lastSeen: new Date(),
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
     metadata: {
       manufacturer: 'Sensirion',
       model: 'SHT30',
@@ -48,17 +32,9 @@ export const mockDevices: IoTDevice[] = [
     id: 'motion-001',
     name: 'Motion Sensor 1',
     type: 'motion_sensor' as any,
-    location: {
-      latitude: 41.0082,
-      longitude: 28.9784,
-      address: 'Istanbul, Turkey',
-      room: 'Room 102',
-      building: 'Main Building'
-    },
+    location: 'Room 102, Main Building, Istanbul',
     status: DeviceStatus.OFFLINE,
     lastSeen: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
     metadata: {
       manufacturer: 'PIR Sensor',
       model: 'HC-SR501',
@@ -69,17 +45,9 @@ export const mockDevices: IoTDevice[] = [
     id: 'light-001',
     name: 'Light Sensor 1',
     type: 'light_sensor' as any,
-    location: {
-      latitude: 41.0082,
-      longitude: 28.9784,
-      address: 'Istanbul, Turkey',
-      room: 'Room 103',
-      building: 'Main Building'
-    },
+    location: 'Room 103, Main Building, Istanbul',
     status: DeviceStatus.ERROR,
     lastSeen: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
     metadata: {
       manufacturer: 'BH1750',
       model: 'FVI',
@@ -142,34 +110,30 @@ export function generateMockAlerts(): Alert[] {
     {
       id: '1',
       deviceId: 'temp-001',
-      type: AlertType.THRESHOLD_EXCEEDED,
-      severity: AlertSeverity.HIGH,
+      title: 'Temperature Threshold Exceeded',
       message: 'Temperature sensor reading is above normal range (28.5°C)',
-      timestamp: new Date(Date.now() - 5 * 60 * 1000),
-      acknowledged: false,
-      resolved: false
+      severity: AlertSeverity.HIGH,
+      status: AlertStatus.ACTIVE,
+      timestamp: new Date(Date.now() - 5 * 60 * 1000)
     },
     {
       id: '2',
       deviceId: 'motion-001',
-      type: AlertType.DEVICE_OFFLINE,
-      severity: AlertSeverity.MEDIUM,
+      title: 'Device Offline',
       message: 'Motion sensor has been offline for more than 10 minutes',
+      severity: AlertSeverity.MEDIUM,
+      status: AlertStatus.ACKNOWLEDGED,
       timestamp: new Date(Date.now() - 15 * 60 * 1000),
-      acknowledged: true,
-      acknowledgedBy: 'admin',
-      acknowledgedAt: new Date(Date.now() - 10 * 60 * 1000),
-      resolved: false
+      acknowledgedAt: new Date(Date.now() - 10 * 60 * 1000)
     },
     {
       id: '3',
       deviceId: 'hum-001',
-      type: AlertType.THRESHOLD_EXCEEDED,
-      severity: AlertSeverity.LOW,
+      title: 'Low Battery Warning',
       message: 'Humidity sensor battery level is below 20%',
-      timestamp: new Date(Date.now() - 60 * 60 * 1000),
-      acknowledged: false,
-      resolved: false
+      severity: AlertSeverity.LOW,
+      status: AlertStatus.ACTIVE,
+      timestamp: new Date(Date.now() - 60 * 60 * 1000)
     }
   ];
 }

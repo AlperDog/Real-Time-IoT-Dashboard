@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { ApiResponse } from '../../shared/types';
+import { ApiResponse } from '../sharedTypes';
 
 const router = Router();
 
@@ -9,21 +9,22 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     
     // TODO: Implement authentication service
-    const token = 'dummy-token';
+    const user = { id: '1', email, name: 'Admin User' };
+    const token = 'mock-jwt-token';
     
     const response: ApiResponse = {
       success: true,
-      data: { token },
+      data: { user, token },
       message: 'Login successful',
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     };
     
     res.json(response);
   } catch (error) {
-    res.status(401).json({
+    res.status(500).json({
       success: false,
-      error: 'Invalid credentials',
-      timestamp: new Date()
+      error: 'Login failed',
+      timestamp: new Date().toISOString()
     });
   }
 });

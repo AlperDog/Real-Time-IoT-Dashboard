@@ -1,20 +1,21 @@
 import { Router } from 'express';
-import { ApiResponse } from '../../shared/types';
+import { ApiResponse } from '../sharedTypes';
+import { generateMockSensorData } from '../services/mockDataService';
 
 const router = Router();
 
 // Get sensor data
-router.get('/', async (req, res) => {
+router.get('/data', async (req, res) => {
   try {
-    const { deviceId, type, startDate, endDate, limit = 100 } = req.query;
+    const { deviceId, limit = 24 } = req.query;
     
     // TODO: Implement sensor service
-    const sensorData = [];
+    const sensorData = generateMockSensorData(deviceId as string, Number(limit));
     
     const response: ApiResponse = {
       success: true,
       data: sensorData,
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     };
     
     res.json(response);
@@ -22,56 +23,56 @@ router.get('/', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sensor data',
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     });
   }
 });
 
 // Get real-time sensor data
-router.get('/realtime/:deviceId', async (req, res) => {
+router.get('/realtime', async (req, res) => {
   try {
-    const { deviceId } = req.params;
+    const { deviceId } = req.query;
     
-    // TODO: Implement real-time data service
-    const realtimeData = null;
+    // TODO: Implement real-time sensor service
+    const realtimeData: any[] = [];
     
     const response: ApiResponse = {
       success: true,
       data: realtimeData,
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     };
     
     res.json(response);
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch real-time data',
-      timestamp: new Date()
+      error: 'Failed to fetch real-time sensor data',
+      timestamp: new Date().toISOString()
     });
   }
 });
 
-// Post sensor data
-router.post('/', async (req, res) => {
+// Get sensor data by device
+router.get('/device/:deviceId', async (req, res) => {
   try {
-    const sensorData = req.body;
+    const { deviceId } = req.params;
+    const { limit = 24 } = req.query;
     
     // TODO: Implement sensor service
-    const newData = sensorData;
+    const sensorData = generateMockSensorData(deviceId, Number(limit));
     
     const response: ApiResponse = {
       success: true,
-      data: newData,
-      message: 'Sensor data recorded successfully',
-      timestamp: new Date()
+      data: sensorData,
+      timestamp: new Date().toISOString()
     };
     
-    res.status(201).json(response);
+    res.json(response);
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Failed to record sensor data',
-      timestamp: new Date()
+      error: 'Failed to fetch sensor data for device',
+      timestamp: new Date().toISOString()
     });
   }
 });

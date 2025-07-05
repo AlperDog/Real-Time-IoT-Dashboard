@@ -1,152 +1,122 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Alert, AlertSeverity } from '../sharedTypes';
+import { 
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+  ExclamationCircleIcon,
+  XCircleIcon
+} from '@heroicons/react/24/outline';
 
-interface Alert {
-  id: string;
-  title: string;
-  message: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  timestamp: string;
-  acknowledged: boolean;
-  deviceId: string;
+interface AlertListProps {
+  alerts: Alert[];
 }
 
-const AlertList: React.FC = () => {
-  // Mock data
-  const alerts: Alert[] = [
-    {
-      id: '1',
-      title: 'Temperature Threshold Exceeded',
-      message: 'Temperature sensor reading is above normal range',
-      severity: 'high',
-      timestamp: '5 minutes ago',
-      acknowledged: false,
-      deviceId: 'temp-001'
-    },
-    {
-      id: '2',
-      title: 'Device Offline',
-      message: 'Motion sensor has been offline for more than 10 minutes',
-      severity: 'medium',
-      timestamp: '15 minutes ago',
-      acknowledged: true,
-      deviceId: 'motion-001'
-    },
-    {
-      id: '3',
-      title: 'Low Battery Warning',
-      message: 'Humidity sensor battery level is below 20%',
-      severity: 'low',
-      timestamp: '1 hour ago',
-      acknowledged: false,
-      deviceId: 'hum-001'
-    }
-  ];
-
-  const getSeverityIcon = (severity: string) => {
+const AlertList: React.FC<AlertListProps> = ({ alerts }) => {
+  const getSeverityIcon = (severity: AlertSeverity) => {
     switch (severity) {
-      case 'critical':
-        return <XCircle className="w-4 h-4 text-red-600" />;
-      case 'high':
-        return <AlertTriangle className="w-4 h-4 text-orange-600" />;
-      case 'medium':
-        return <Clock className="w-4 h-4 text-yellow-600" />;
-      case 'low':
-        return <CheckCircle className="w-4 h-4 text-blue-600" />;
+      case AlertSeverity.LOW:
+        return <InformationCircleIcon className="w-5 h-5 text-blue-500" />;
+      case AlertSeverity.MEDIUM:
+        return <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500" />;
+      case AlertSeverity.HIGH:
+        return <ExclamationCircleIcon className="w-5 h-5 text-orange-500" />;
+      case AlertSeverity.CRITICAL:
+        return <XCircleIcon className="w-5 h-5 text-red-500" />;
       default:
-        return <AlertTriangle className="w-4 h-4 text-gray-600" />;
+        return <InformationCircleIcon className="w-5 h-5 text-gray-500" />;
     }
   };
 
-  const getSeverityClass = (severity: string) => {
+  const getSeverityColor = (severity: AlertSeverity) => {
     switch (severity) {
-      case 'critical':
-        return 'border-red-200 bg-red-50';
-      case 'high':
-        return 'border-orange-200 bg-orange-50';
-      case 'medium':
-        return 'border-yellow-200 bg-yellow-50';
-      case 'low':
-        return 'border-blue-200 bg-blue-50';
+      case AlertSeverity.LOW:
+        return 'text-blue-600 bg-blue-100';
+      case AlertSeverity.MEDIUM:
+        return 'text-yellow-600 bg-yellow-100';
+      case AlertSeverity.HIGH:
+        return 'text-orange-600 bg-orange-100';
+      case AlertSeverity.CRITICAL:
+        return 'text-red-600 bg-red-100';
       default:
-        return 'border-gray-200 bg-gray-50';
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
-  const getSeverityTextClass = (severity: string) => {
+  const getSeverityText = (severity: AlertSeverity) => {
     switch (severity) {
-      case 'critical':
-        return 'text-red-800';
-      case 'high':
-        return 'text-orange-800';
-      case 'medium':
-        return 'text-yellow-800';
-      case 'low':
-        return 'text-blue-800';
+      case AlertSeverity.LOW:
+        return 'Düşük';
+      case AlertSeverity.MEDIUM:
+        return 'Orta';
+      case AlertSeverity.HIGH:
+        return 'Yüksek';
+      case AlertSeverity.CRITICAL:
+        return 'Kritik';
       default:
-        return 'text-gray-800';
+        return 'Bilinmiyor';
     }
+  };
+
+  const formatTime = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Az önce';
+    if (minutes < 60) return `${minutes} dakika önce`;
+    if (hours < 24) return `${hours} saat önce`;
+    return `${days} gün önce`;
   };
 
   return (
-    <div className="space-y-3">
-      {alerts.map((alert, index) => (
-        <motion.div
-          key={alert.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className={`p-3 border rounded-lg ${getSeverityClass(alert.severity)} ${
-            alert.acknowledged ? 'opacity-60' : ''
-          }`}
-        >
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 mt-0.5">
-              {getSeverityIcon(alert.severity)}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <h4 className={`text-sm font-medium ${getSeverityTextClass(alert.severity)}`}>
-                  {alert.title}
-                </h4>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${getSeverityClass(alert.severity)} ${getSeverityTextClass(alert.severity)}`}>
-                  {alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1)}
-                </span>
-              </div>
-              <p className="text-sm text-gray-600 mt-1">{alert.message}</p>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-gray-500">{alert.timestamp}</span>
-                {!alert.acknowledged && (
-                  <button className="text-xs text-blue-600 hover:text-blue-800 font-medium">
-                    Acknowledge
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      ))}
+    <div className="bg-white rounded-xl shadow-sm p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Son Uyarılar</h3>
       
+      <div className="space-y-3">
+        {alerts.slice(0, 5).map((alert, index) => (
+          <motion.div
+            key={alert.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <div className="flex items-start space-x-3">
+              {getSeverityIcon(alert.severity)}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-gray-900 truncate">{alert.title}</h4>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(alert.severity)}`}>
+                    {getSeverityText(alert.severity)}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">{alert.message}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-500">Cihaz: {alert.deviceId}</span>
+                  <span className="text-xs text-gray-500">{formatTime(alert.timestamp)}</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
       {alerts.length === 0 && (
-        <div className="text-center py-8">
-          <CheckCircle className="mx-auto h-8 w-8 text-green-400 mb-2" />
-          <p className="text-sm text-gray-500">No active alerts</p>
+        <div className="text-center py-8 text-gray-500">
+          <p>Aktif uyarı bulunmuyor</p>
         </div>
       )}
-      
-      <div className="mt-4 pt-3 border-t border-gray-200">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Total Alerts:</span>
-          <span className="font-medium">{alerts.length}</span>
+
+      {alerts.length > 5 && (
+        <div className="mt-4 pt-3 border-t border-gray-200">
+          <button className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium">
+            Tüm uyarıları görüntüle ({alerts.length})
+          </button>
         </div>
-        <div className="flex justify-between text-sm mt-1">
-          <span className="text-gray-600">Unacknowledged:</span>
-          <span className="font-medium text-orange-600">
-            {alerts.filter(a => !a.acknowledged).length}
-          </span>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

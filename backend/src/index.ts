@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit';
 
 import { connectDatabase } from './config/database';
 import { connectRedis } from './config/redis';
-import { setupSocketIO } from './config/socket';
+import { setupSocketIO } from './socket';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 
@@ -27,13 +27,6 @@ dotenv.config();
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST'],
-    credentials: true
-  }
-});
 
 const PORT = process.env.PORT || 3001;
 
@@ -92,7 +85,8 @@ async function initializeApp() {
     console.log('✅ Connected to Redis');
 
     // Setup Socket.IO
-    setupSocketIO(io);
+    setupSocketIO(server);
+    console.log('✅ Socket.IO configured');
     console.log('✅ Socket.IO configured');
 
     // Start server
