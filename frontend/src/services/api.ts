@@ -1,27 +1,41 @@
-import { DashboardStats, IoTDevice, SensorData, Alert } from '../sharedTypes';
+import { DashboardStats, IoTDevice, SensorData, Alert, ApiResponse } from '../sharedTypes';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-// API response tipi
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-  timestamp?: string;
-}
+// Get auth token from localStorage
+const getAuthToken = (): string | null => {
+  return localStorage.getItem('token');
+};
 
 // API istekleri için yardımcı fonksiyon
 async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const token = getAuthToken();
+  
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+
+  // Add authorization header if token exists
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
     ...options,
   });
 
+  // Handle 401 Unauthorized - redirect to auth
+  if (response.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    window.location.href = '/auth';
+    throw new Error('Authentication required');
+  }
+
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `API request failed: ${response.statusText}`);
   }
 
   const result: ApiResponse<T> = await response.json();
@@ -33,58 +47,108 @@ async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<T
   return result.data as T;
 }
 
-// Dashboard istatistikleri
+// Dashboard API functions
 export const fetchDashboardStats = async (): Promise<DashboardStats> => {
   return apiRequest<DashboardStats>('/api/dashboard/stats');
 };
 
-// Cihaz listesi
 export const fetchDevices = async (): Promise<IoTDevice[]> => {
   return apiRequest<IoTDevice[]>('/api/devices');
 };
 
-// Sensör verileri
-export const fetchSensorData = async (): Promise<SensorData[]> => {
-  return apiRequest<SensorData[]>('/api/sensors/data');
+export const fetchDeviceById = async (id: string): Promise<IoTDevice> => {
+  return apiRequest<IoTDevice>(`/api/devices/${id}`);
 };
 
-// Uyarılar
+export const fetchSensorData = async (): Promise<SensorData[]> => {
+  return apiRequest<SensorData[]>('/api/sensors');
+};
+
 export const fetchAlerts = async (): Promise<Alert[]> => {
   return apiRequest<Alert[]>('/api/alerts');
 };
 
-// Belirli bir cihazın verileri
-export const fetchDeviceData = async (deviceId: string): Promise<SensorData[]> => {
-  return apiRequest<SensorData[]>(`/api/devices/${deviceId}/data`);
+export const fetchAnalytics = async (period: string = '24h') => {
+  return apiRequest(`/api/analytics?period=${period}`);
 };
 
-// Cihaz durumu güncelleme
-export const updateDeviceStatus = async (deviceId: string, status: string): Promise<IoTDevice> => {
-  return apiRequest<IoTDevice>(`/api/devices/${deviceId}/status`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status }),
-  });
-};
-
-// Uyarı oluşturma
-export const createAlert = async (alert: Omit<Alert, 'id' | 'timestamp'>): Promise<Alert> => {
-  return apiRequest<Alert>('/api/alerts', {
+// Device control API functions
+export const sendDeviceCommand = async (deviceId: string, command: string, parameters?: any) => {
+  return apiRequest(`/api/devices/${deviceId}/command`, {
     method: 'POST',
-    body: JSON.stringify(alert),
+    body: JSON.stringify({ command, parameters }),
   });
 };
 
-// Uyarı güncelleme
-export const updateAlert = async (alertId: string, updates: Partial<Alert>): Promise<Alert> => {
-  return apiRequest<Alert>(`/api/alerts/${alertId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(updates),
+export const updateDeviceConfig = async (deviceId: string, config: any) => {
+  return apiRequest(`/api/devices/${deviceId}/config`, {
+    method: 'PUT',
+    body: JSON.stringify(config),
   });
 };
 
-// Uyarı silme
-export const deleteAlert = async (alertId: string): Promise<void> => {
-  return apiRequest<void>(`/api/alerts/${alertId}`, {
-    method: 'DELETE',
+export const getDeviceFirmware = async (deviceId: string) => {
+  return apiRequest(`/api/devices/${deviceId}/firmware`);
+};
+
+export const updateDeviceFirmware = async (deviceId: string, version: string) => {
+  return apiRequest(`/api/devices/${deviceId}/firmware/update`, {
+    method: 'POST',
+    body: JSON.stringify({ version }),
   });
+};
+
+export const getDeviceCommands = async (deviceId: string) => {
+  return apiRequest(`/api/devices/${deviceId}/commands`);
+};
+
+export const bulkDeviceCommand = async (deviceIds: string[], command: string, parameters?: any) => {
+  return apiRequest('/api/devices/bulk/command', {
+    method: 'POST',
+    body: JSON.stringify({ deviceIds, command, parameters }),
+  });
+};
+
+// Alert API functions
+export const acknowledgeAlert = async (alertId: string) => {
+  return apiRequest(`/api/alerts/${alertId}/acknowledge`, {
+    method: 'POST',
+  });
+};
+
+export const resolveAlert = async (alertId: string) => {
+  return apiRequest(`/api/alerts/${alertId}/resolve`, {
+    method: 'POST',
+  });
+};
+
+// User profile API functions
+export const getUserProfile = async () => {
+  return apiRequest('/api/auth/profile');
+};
+
+export const changePassword = async (currentPassword: string, newPassword: string) => {
+  return apiRequest('/api/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+};
+
+export const forgotPassword = async (email: string) => {
+  return apiRequest('/api/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+};
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  return apiRequest('/api/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, newPassword }),
+  });
+};
+
+// Health check
+export const checkHealth = async () => {
+  return apiRequest('/health');
 }; 

@@ -116,4 +116,38 @@ export interface ApiResponse<T = any> {
   message?: string;
   error?: string;
   timestamp?: string;
+}
+
+// User Types
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  permissions: Permission[];
+  createdAt: Date;
+  lastLogin?: Date;
+  isActive?: boolean;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  emailVerified?: boolean;
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
+}
+
+export enum UserRole {
+  ADMIN = 'admin',
+  OPERATOR = 'operator',
+  VIEWER = 'viewer'
+}
+
+export enum Permission {
+  READ_DEVICES = 'read_devices',
+  WRITE_DEVICES = 'write_devices',
+  READ_DATA = 'read_data',
+  WRITE_DATA = 'write_data',
+  READ_ALERTS = 'read_alerts',
+  MANAGE_ALERTS = 'manage_alerts',
+  MANAGE_USERS = 'manage_users',
+  MANAGE_SYSTEM = 'manage_system'
 } 

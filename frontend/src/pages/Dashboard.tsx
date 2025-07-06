@@ -12,7 +12,7 @@ import {
 import { useSocket } from '../hooks/useSocket';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDashboardStats, fetchDevices, fetchSensorData, fetchAlerts } from '../services/api';
-import { SensorData } from '../sharedTypes';
+import { SensorData, DashboardStats, Alert, IoTDevice } from '../sharedTypes';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import StatCard from '../components/StatCard';
@@ -34,25 +34,25 @@ const Dashboard: React.FC = () => {
   const [isSimulationRunning, setIsSimulationRunning] = useState(true);
 
   // API verilerini çek
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<DashboardStats>({
     queryKey: ['dashboard-stats'],
     queryFn: fetchDashboardStats,
     refetchInterval: 30000, // 30 saniyede bir güncelle
   });
 
-  const { data: devices } = useQuery({
+  const { data: devices } = useQuery<IoTDevice[]>({
     queryKey: ['devices'],
     queryFn: fetchDevices,
     refetchInterval: 60000, // 1 dakikada bir güncelle
   });
 
-  const { data: sensorData } = useQuery({
+  const { data: sensorData } = useQuery<SensorData[]>({
     queryKey: ['sensor-data'],
     queryFn: fetchSensorData,
     refetchInterval: 10000, // 10 saniyede bir güncelle
   });
 
-  const { data: alerts } = useQuery({
+  const { data: alerts } = useQuery<Alert[]>({
     queryKey: ['alerts'],
     queryFn: fetchAlerts,
     refetchInterval: 15000, // 15 saniyede bir güncelle

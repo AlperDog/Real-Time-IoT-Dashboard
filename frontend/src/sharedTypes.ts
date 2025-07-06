@@ -108,4 +108,50 @@ export interface AnalyticsData {
     byStatus: Record<DeviceStatus, number>;
     byType: Record<string, number>;
   };
+}
+
+// API Response Types
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+  timestamp: Date;
+}
+
+export interface PaginatedResponse<T> extends ApiResponse<T[]> {
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+// User Types
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  permissions: Permission[];
+  createdAt: Date;
+  lastLogin?: Date;
+}
+
+export enum UserRole {
+  ADMIN = 'admin',
+  OPERATOR = 'operator',
+  VIEWER = 'viewer'
+}
+
+export enum Permission {
+  READ_DEVICES = 'read_devices',
+  WRITE_DEVICES = 'write_devices',
+  READ_DATA = 'read_data',
+  WRITE_DATA = 'write_data',
+  READ_ALERTS = 'read_alerts',
+  MANAGE_ALERTS = 'manage_alerts',
+  MANAGE_USERS = 'manage_users',
+  MANAGE_SYSTEM = 'manage_system'
 } 

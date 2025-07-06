@@ -1,373 +1,360 @@
-# Real-Time IoT Dashboard
+# 🚀 Real-Time IoT Dashboard
 
-A modern, scalable real-time dashboard for IoT data visualization and analytics built with React, Node.js, and TypeScript.
+A modern, full-stack IoT dashboard built with React, Node.js, and TypeScript. Features real-time device monitoring, sensor data visualization, alert management, and **advanced device control capabilities**.
 
-## 🚀 Features
+![IoT Dashboard](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![React](https://img.shields.io/badge/React-18-blue)
+![Node.js](https://img.shields.io/badge/Node.js-18-green)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 
-- **Real-time Data Streaming**: Live sensor data visualization using WebSocket
-- **Interactive Charts**: Multiple chart types (line, bar, gauge) using Chart.js
-- **Responsive Design**: Mobile-first approach with modern UI/UX using Tailwind CSS
-- **Data Analytics**: Real-time statistics and trend analysis
-- **Scalable Architecture**: Microservices-ready backend with Redis caching
-- **Real-time Alerts**: Configurable threshold-based notifications
-- **Device Management**: IoT device configuration and monitoring
-- **Docker Support**: Complete containerization with Docker Compose
-- **TypeScript**: Full type safety across frontend and backend
-- **Hot Reload**: Development environment with automatic reloading
+## ✨ Features
+
+### 📊 **Real-Time Monitoring**
+
+- Live sensor data visualization with Chart.js
+- Real-time device status updates via WebSocket
+- Interactive dashboards with Framer Motion animations
+- Responsive design for all devices
+
+### 🎮 **Advanced Device Control** 🆕
+
+- **Remote Device Commands**: Restart, calibrate, emergency stop
+- **Live Configuration Management**: Real-time parameter updates
+- **Firmware Management**: OTA updates with progress tracking
+- **Bulk Operations**: Multi-device command execution
+- **Command History**: Track all device interactions
+- **Real-time Response**: Instant feedback on command execution
+
+### 📈 **Analytics & Insights**
+
+- Comprehensive analytics dashboard
+- Historical data trends
+- Performance metrics
+- System health monitoring
+
+### 🚨 **Alert Management**
+
+- Real-time alert notifications
+- Severity-based alert categorization
+- Alert acknowledgment system
+- Automated alert resolution
+
+### 🔧 **System Management**
+
+- Device registration and management
+- Sensor configuration
+- User authentication (ready for implementation)
+- System configuration
 
 ## 🛠 Tech Stack
 
 ### Frontend
 
 - **React 18** with TypeScript
-- **Chart.js** for data visualization
 - **Tailwind CSS** for styling
-- **Socket.io Client** for real-time communication
-- **React Query** for data fetching
-- **Framer Motion** for animations
 - **React Router** for navigation
-- **@heroicons/react** for icons
+- **React Query** for data fetching
+- **Chart.js** for data visualization
+- **Framer Motion** for animations
+- **Socket.IO Client** for real-time communication
 
 ### Backend
 
-- **Node.js** with Express
-- **TypeScript** for type safety
-- **Socket.io** for real-time communication
-- **Redis** for caching and pub/sub
+- **Node.js** with TypeScript
+- **Express.js** framework
+- **Socket.IO** for WebSocket communication
 - **MongoDB** for data persistence
-- **JWT** for authentication (ready for implementation)
-- **CORS** and rate limiting middleware
-- **Nodemon** for development
+- **Redis** for caching and sessions
+- **JWT** for authentication (ready)
 
-### Infrastructure
+### DevOps
 
-- **Docker** and **Docker Compose** for containerization
-- **MongoDB 6.0** for database
-- **Redis 7-alpine** for caching
-- **Multi-stage builds** for optimized containers
-
-## 📊 Dashboard Components
-
-1. **Sensor Overview**: Real-time sensor status and health monitoring
-2. **Data Visualization**: Interactive charts and graphs for sensor data
-3. **Analytics Panel**: Statistical analysis and trend visualization
-4. **Alert System**: Real-time notifications and alert management
-5. **Device Management**: IoT device configuration and status monitoring
-6. **Real-time Controls**: Start/stop simulation and test data generation
+- **Docker** containerization
+- **Docker Compose** for orchestration
+- **TypeScript** for type safety
+- **ESLint** for code quality
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Docker** and **Docker Compose** (recommended)
-- Node.js 18+ (for local development)
+- Docker and Docker Compose
+- Node.js 18+ (for development)
 - Git
 
-### Option 1: Docker (Recommended)
-
-1. **Clone the repository**
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/AlperDog/Real-Time-IoT-Dashboard.git
-cd Real-Time-IoT-Dashboard
+git clone https://github.com/yourusername/iot-dashboard.git
+cd iot-dashboard
 ```
 
-2. **Start with Docker Compose**
+### 2. Start with Docker
 
 ```bash
 # Start all services
-docker-compose up --build
+docker compose up -d
 
-# Or use Docker Compose Watch for development
-docker compose watch
+# View logs
+docker compose logs -f
 ```
 
-3. **Access the application**
+### 3. Access the Application
 
-The application will be available at:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **API Documentation**: See `API.md`
 
-- **Frontend Dashboard**: http://localhost:3000
-- **Backend API**: http://localhost:3001
-- **API Health Check**: http://localhost:3001/health
-- **MongoDB**: localhost:27017
-- **Redis**: localhost:6379
-
-### Option 2: Manual Setup
-
-1. **Clone the repository**
+### 4. Development Setup (Optional)
 
 ```bash
-git clone https://github.com/AlperDog/Real-Time-IoT-Dashboard.git
-cd Real-Time-IoT-Dashboard
-```
+# Install dependencies
+npm install
 
-2. **Install dependencies**
-
-```bash
-# Install backend dependencies
-cd backend && npm install
-
-# Install frontend dependencies
-cd ../frontend && npm install
-```
-
-3. **Environment Setup**
-
-Create environment files:
-
-```bash
-# Backend
-cp backend/.env.example backend/.env
-# Edit backend/.env with your configuration
-
-# Frontend
-cp frontend/.env.example frontend/.env
-# Edit frontend/.env with your configuration
-```
-
-4. **Start the application**
-
-```bash
-# Start backend (from backend directory)
-npm run dev
-
-# Start frontend (from frontend directory)
-npm start
+# Start development servers
+npm run dev:backend  # Backend on port 5000
+npm run dev:frontend # Frontend on port 3000
 ```
 
 ## 📁 Project Structure
 
 ```
-Real-Time-IoT-Dashboard/
+iot-dashboard/
 ├── frontend/                 # React frontend application
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   │   ├── Sidebar.tsx
-│   │   │   ├── Header.tsx
-│   │   │   ├── StatCard.tsx
-│   │   │   ├── LineChart.tsx
-│   │   │   ├── GaugeChart.tsx
-│   │   │   ├── DeviceStatus.tsx
-│   │   │   └── AlertList.tsx
-│   │   ├── pages/          # Page components
-│   │   │   └── Dashboard.tsx
-│   │   ├── hooks/          # Custom React hooks
-│   │   │   └── useSocket.ts
-│   │   ├── services/       # API and WebSocket services
-│   │   │   └── api.ts
-│   │   ├── sharedTypes.ts  # TypeScript type definitions
-│   │   └── App.tsx         # Main application component
-│   ├── public/             # Static assets
-│   ├── Dockerfile          # Frontend container configuration
-│   └── package.json        # Frontend dependencies
-├── backend/                 # Node.js backend API
+│   │   ├── components/       # React components
+│   │   │   ├── DeviceControl.tsx    # 🆕 Device control interface
+│   │   │   ├── FirmwareManager.tsx  # 🆕 Firmware management
+│   │   │   ├── BulkOperations.tsx   # 🆕 Bulk device operations
+│   │   │   └── ...
+│   │   ├── services/         # API services
+│   │   ├── hooks/           # Custom React hooks
+│   │   └── sharedTypes.ts   # Shared TypeScript types
+│   └── package.json
+├── backend/                  # Node.js backend application
 │   ├── src/
-│   │   ├── routes/         # API routes
-│   │   │   ├── devices.ts
-│   │   │   ├── sensors.ts
-│   │   │   ├── alerts.ts
-│   │   │   ├── analytics.ts
-│   │   │   ├── dashboard.ts
-│   │   │   └── auth.ts
-│   │   ├── services/       # Business logic and mock data
-│   │   │   ├── mockDataService.ts
-│   │   │   └── realTimeDataService.ts
-│   │   ├── middleware/     # Custom middleware
-│   │   │   ├── errorHandler.ts
-│   │   │   └── notFound.ts
-│   │   ├── config/         # Configuration files
-│   │   │   ├── database.ts
-│   │   │   └── redis.ts
-│   │   ├── sharedTypes.ts  # Shared TypeScript types
-│   │   ├── socket.ts       # Socket.IO configuration
-│   │   └── index.ts        # Main server file
-│   ├── Dockerfile          # Backend container configuration
-│   └── package.json        # Backend dependencies
-├── docker-compose.yml      # Multi-container setup
-└── README.md              # Project documentation
+│   │   ├── routes/          # API routes
+│   │   │   └── devices.ts   # 🆕 Enhanced with device control
+│   │   ├── services/        # Business logic
+│   │   ├── socket.ts        # 🆕 WebSocket with device control
+│   │   └── app.ts           # Express app setup
+│   └── package.json
+├── shared/                   # Shared TypeScript types
+├── docker-compose.yml        # Docker orchestration
+├── Dockerfile.frontend       # Frontend Dockerfile
+├── Dockerfile.backend        # Backend Dockerfile
+└── README.md
 ```
 
-## 🔧 Configuration
+## 🔌 API Endpoints
+
+### Device Control Endpoints 🆕
+
+```http
+POST /api/devices/{id}/command          # Send command to device
+PUT  /api/devices/{id}/config           # Update device configuration
+GET  /api/devices/{id}/firmware         # Get firmware info
+POST /api/devices/{id}/firmware/update  # Start firmware update
+GET  /api/devices/{id}/commands         # Get command history
+POST /api/devices/bulk/command          # Bulk device operations
+```
+
+### Standard Endpoints
+
+```http
+GET  /api/devices                        # Get all devices
+GET  /api/devices/{id}                   # Get device by ID
+GET  /api/sensors                        # Get sensor data
+GET  /api/alerts                         # Get alerts
+GET  /api/analytics/dashboard            # Get dashboard analytics
+```
+
+## 🔄 WebSocket Events
+
+### Device Control Events 🆕
+
+```javascript
+// Send device command
+socket.emit("send-device-command", {
+  deviceId: "device-001",
+  command: "RESTART",
+  parameters: { delay: 5000 },
+});
+
+// Update device configuration
+socket.emit("update-device-config", {
+  deviceId: "device-001",
+  config: { samplingRate: 30 },
+});
+
+// Start firmware update
+socket.emit("start-firmware-update", {
+  deviceId: "device-001",
+  version: "1.3.0",
+});
+
+// Bulk device command
+socket.emit("bulk-device-command", {
+  deviceIds: ["device-001", "device-002"],
+  command: "RESTART",
+});
+```
+
+### Real-time Events
+
+```javascript
+// Listen for real-time updates
+socket.on("sensor-data", (data) => {
+  /* Handle sensor data */
+});
+socket.on("device-status-update", (data) => {
+  /* Handle status changes */
+});
+socket.on("new-alert", (data) => {
+  /* Handle new alerts */
+});
+socket.on("device-command-response", (data) => {
+  /* Handle command responses */
+});
+```
+
+## 🎮 Device Control Features
+
+### 1. **Remote Commands**
+
+- **Restart**: Safely restart devices
+- **Calibrate**: Recalibrate sensors
+- **Emergency Stop**: Immediate device shutdown
+- **Status Check**: Get device health status
+
+### 2. **Configuration Management**
+
+- **Real-time Updates**: Change device parameters instantly
+- **Threshold Settings**: Configure alert thresholds
+- **Sampling Rates**: Adjust data collection frequency
+- **Alert Rules**: Set up notification preferences
+
+### 3. **Firmware Management**
+
+- **Version Control**: Track firmware versions
+- **OTA Updates**: Over-the-air firmware updates
+- **Progress Tracking**: Real-time update progress
+- **Rollback Support**: Revert to previous versions
+
+### 4. **Bulk Operations**
+
+- **Multi-device Commands**: Execute commands on multiple devices
+- **Batch Processing**: Efficient bulk operations
+- **Status Tracking**: Monitor bulk operation progress
+- **Error Handling**: Graceful failure management
+
+## 🐳 Docker Commands
+
+```bash
+# Start all services
+docker compose up -d
+
+# Stop all services
+docker compose down
+
+# View logs
+docker compose logs -f [service-name]
+
+# Rebuild and restart
+docker compose up -d --build
+
+# Access container shell
+docker compose exec [service-name] sh
+```
+
+## 🔧 Development
 
 ### Environment Variables
+
+Create `.env` files in frontend and backend directories:
 
 **Backend (.env)**
 
 ```env
-PORT=3001
-MONGODB_URI=mongodb://mongodb:27017/iot-dashboard
-REDIS_URL=redis://redis:6379
-JWT_SECRET=your-jwt-secret-key
-NODE_ENV=development
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/iot-dashboard
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your-secret-key
 FRONTEND_URL=http://localhost:3000
 ```
 
 **Frontend (.env)**
 
 ```env
-REACT_APP_API_URL=http://localhost:3001
-REACT_APP_WS_URL=http://localhost:3001
-REACT_APP_ENV=development
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_WS_URL=http://localhost:5000
 ```
-
-## 📈 Features in Detail
-
-### Real-time Data Streaming
-
-- **WebSocket Connection**: Live data updates via Socket.IO
-- **Automatic Reconnection**: Handles connection drops gracefully
-- **Data Buffering**: Offline scenario support
-- **Mock IoT Simulation**: Realistic sensor data generation
-- **Simulation Controls**: Start/stop real-time data simulation
-
-### Interactive Charts
-
-- **Line Charts**: Time-series data visualization
-- **Gauge Charts**: Sensor readings with thresholds
-- **Real-time Updates**: Live chart updates
-- **Responsive Design**: Mobile-friendly charts
-
-### Analytics & Insights
-
-- **Real-time Statistics**: Live dashboard metrics
-- **Device Status Monitoring**: Online/offline device tracking
-- **Alert Management**: Configurable alert thresholds
-- **Data Trends**: Historical data analysis
-
-### Device Management
-
-- **Device Status**: Real-time device health monitoring
-- **Battery Levels**: Device battery monitoring
-- **Location Tracking**: Device location information
-- **Status Indicators**: Visual status representation
-
-## 🚀 API Endpoints
-
-### Dashboard
-
-- `GET /api/dashboard/stats` - Dashboard statistics
-
-### Devices
-
-- `GET /api/devices` - Get all devices
-- `GET /api/devices/:id` - Get device by ID
-
-### Sensors
-
-- `GET /api/sensors/data` - Get sensor data
-- `GET /api/sensors/realtime` - Get real-time sensor data
-
-### Alerts
-
-- `GET /api/alerts` - Get all alerts
-- `GET /api/alerts/:id` - Get alert by ID
-
-### Analytics
-
-- `GET /api/analytics` - Get analytics data
-
-### Health Check
-
-- `GET /health` - Application health status
-
-## 🔌 WebSocket Events
-
-### Client to Server
-
-- `join-dashboard` - Join dashboard room
-- `join-device` - Listen to specific device
-- `leave-device` - Stop listening to device
-- `request-test-data` - Request test data
-- `start-simulation` - Start data simulation
-- `stop-simulation` - Stop data simulation
-- `ping` - Connection test
-
-### Server to Client
-
-- `dashboard-init` - Dashboard initialization
-- `sensor_data_update` - Real-time sensor data
-- `device_status_update` - Device status changes
-- `alert_update` - New alert notifications
-- `simulation_status` - Simulation status update
-- `pong` - Connection test response
-
-## 🐳 Docker Commands
-
-```bash
-# Start all services
-docker-compose up --build
-
-# Start in background
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop all services
-docker-compose down
-
-# Rebuild containers
-docker-compose build --no-cache
-
-# Restart specific service
-docker-compose restart backend
-
-# View running containers
-docker-compose ps
-```
-
-## 🧪 Development
 
 ### Available Scripts
 
-**Backend:**
-
 ```bash
-npm run dev          # Start development server with nodemon
-npm run build        # Build TypeScript
-npm run start        # Start production server
-npm run test         # Run tests
+# Development
+npm run dev:backend    # Start backend in development mode
+npm run dev:frontend   # Start frontend in development mode
+npm run dev           # Start both frontend and backend
+
+# Building
+npm run build:backend  # Build backend
+npm run build:frontend # Build frontend
+npm run build         # Build both
+
+# Testing
+npm run test          # Run tests
+npm run test:watch    # Run tests in watch mode
+
+# Linting
+npm run lint          # Run ESLint
+npm run lint:fix      # Fix linting issues
 ```
 
-**Frontend:**
+## 📊 Monitoring & Analytics
 
-```bash
-npm start            # Start development server
-npm run build        # Build for production
-npm run test         # Run tests
-npm run eject        # Eject from Create React App
-```
+### Real-time Metrics
 
-### Hot Reload
+- Device online/offline status
+- Sensor data trends
+- Alert frequency and severity
+- System performance metrics
 
-The development environment includes hot reload for both frontend and backend:
+### Historical Data
 
-- **Frontend**: React development server with hot reload
-- **Backend**: Nodemon with TypeScript support
-- **Docker**: Volume mounts for live code updates
+- 24-hour, 7-day, and 30-day views
+- Data export capabilities
+- Trend analysis
+- Performance reports
+
+## 🔒 Security Features
+
+- **Input Validation**: All inputs are validated
+- **Rate Limiting**: API rate limiting implemented
+- **CORS Configuration**: Secure cross-origin requests
+- **Error Handling**: Comprehensive error management
+- **Authentication Ready**: JWT implementation prepared
 
 ## 🚀 Deployment
 
-### Production Build
+### Production Deployment
 
 ```bash
 # Build production images
-docker-compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
 
-# Start production services
-docker-compose -f docker-compose.prod.yml up -d
+# With environment variables
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
 ```
 
-### Environment Variables for Production
+### Environment Configuration
 
-```env
-NODE_ENV=production
-PORT=3001
-MONGODB_URI=mongodb://your-mongodb-uri
-REDIS_URL=redis://your-redis-uri
-JWT_SECRET=your-production-jwt-secret
-FRONTEND_URL=https://your-domain.com
-```
+- Set production environment variables
+- Configure database connections
+- Set up SSL certificates
+- Configure monitoring and logging
 
 ## 🤝 Contributing
 
@@ -381,22 +368,22 @@ FRONTEND_URL=https://your-domain.com
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🆘 Support
 
-- **React** team for the amazing frontend framework
-- **Node.js** community for the robust backend runtime
-- **Socket.IO** for real-time communication
-- **Chart.js** for data visualization
-- **Tailwind CSS** for utility-first styling
+- **Documentation**: [API.md](API.md) for detailed API documentation
+- **Issues**: Create an issue on GitHub
+- **Discussions**: Use GitHub Discussions for questions
 
-## 📞 Support
+## 🔮 Roadmap
 
-If you have any questions or need help:
-
-- Create an issue on GitHub
-- Check the documentation
-- Review the code examples
+- [ ] **Authentication System**: User management and role-based access
+- [ ] **Advanced Analytics**: Machine learning insights
+- [ ] **Mobile App**: React Native mobile application
+- [ ] **Cloud Integration**: AWS/Azure cloud deployment
+- [ ] **Edge Computing**: Local processing capabilities
+- [ ] **API Gateway**: Enhanced API management
+- [ ] **Multi-tenancy**: Support for multiple organizations
 
 ---
 
-**Built with ❤️ for IoT enthusiasts and developers**
+**Built with ❤️ for the IoT community**
