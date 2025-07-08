@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bell, Search, User } from 'lucide-react';
+import { getUserProfile } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header: React.FC = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getUserProfile();
+        setProfile(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProfile();
+  }, []);
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -31,12 +59,23 @@ const Header: React.FC = () => {
 
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">John Doe</p>
-              <p className="text-xs text-gray-500">Administrator</p>
+              {loading ? (
+                <p className="text-xs text-gray-400">Loading...</p>
+              ) : error ? (
+                <p className="text-xs text-red-500">{error}</p>
+              ) : profile ? (
+                <>
+                  <p className="text-sm font-medium text-gray-900">{profile.name}</p>
+                  <p className="text-xs text-gray-500">{profile.role}</p>
+                </>
+              ) : null}
             </div>
             <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-gray-600" />
             </div>
+            <button className="ml-4 btn-secondary text-xs" onClick={handleLogout}>
+              Logout
+            </button>
           </div>
         </div>
       </div>

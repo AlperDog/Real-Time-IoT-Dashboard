@@ -52,12 +52,8 @@ const seedUsers = async () => {
 
     // Hash passwords and create users
     for (const userData of users) {
-      const salt = await bcrypt.genSalt(12);
-      const hashedPassword = await bcrypt.hash(userData.password, salt);
-
       const user = new User({
         ...userData,
-        password: hashedPassword,
         isActive: true,
         emailVerified: true
       });

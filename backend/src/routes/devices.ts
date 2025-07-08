@@ -56,6 +56,90 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Add new device
+router.post('/', async (req, res) => {
+  try {
+    const newDevice = req.body;
+    if (!newDevice || !newDevice.id || !newDevice.name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Device id and name are required',
+        timestamp: new Date().toISOString()
+      });
+    }
+    mockDevices.push(newDevice);
+    return res.status(201).json({
+      success: true,
+      data: newDevice,
+      message: 'Device added successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to add device',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Update device
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const update = req.body;
+    const index = mockDevices.findIndex(d => d.id === id);
+    if (index === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Device not found',
+        timestamp: new Date().toISOString()
+      });
+    }
+    mockDevices[index] = { ...mockDevices[index], ...update };
+    return res.json({
+      success: true,
+      data: mockDevices[index],
+      message: 'Device updated successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to update device',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Delete device
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const index = mockDevices.findIndex(d => d.id === id);
+    if (index === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Device not found',
+        timestamp: new Date().toISOString()
+      });
+    }
+    const deleted = mockDevices.splice(index, 1);
+    return res.json({
+      success: true,
+      data: deleted[0],
+      message: 'Device deleted successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to delete device',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // ===== DEVICE CONTROL ENDPOINTS =====
 
 // Send command to device

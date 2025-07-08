@@ -13,8 +13,6 @@ import { useSocket } from '../hooks/useSocket';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDashboardStats, fetchDevices, fetchSensorData, fetchAlerts } from '../services/api';
 import { SensorData, DashboardStats, Alert, IoTDevice } from '../sharedTypes';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
 import StatCard from '../components/StatCard';
 import LineChart from '../components/LineChart';
 import GaugeChart from '../components/GaugeChart';
@@ -132,165 +130,158 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-          {/* Bağlantı Durumu ve Kontroller */}
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
-                isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                <div className={`w-2 h-2 rounded-full ${
-                  isConnected ? 'bg-green-500' : 'bg-red-500'
-                }`} />
-                <span className="text-sm font-medium">
-                  {isConnected ? 'Gerçek Zamanlı Bağlantı Aktif' : 'Bağlantı Kesik'}
-                </span>
-              </div>
-              
-              {isConnected && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Simülasyon:</span>
-                  <button
-                    onClick={handleSimulationToggle}
-                    className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      isSimulationRunning 
-                        ? 'bg-red-100 text-red-700 hover:bg-red-200' 
-                        : 'bg-green-100 text-green-700 hover:bg-green-200'
-                    }`}
-                  >
-                    {isSimulationRunning ? (
-                      <>
-                        <StopIcon className="w-4 h-4" />
-                        <span>Durdur</span>
-                      </>
-                    ) : (
-                      <>
-                        <PlayIcon className="w-4 h-4" />
-                        <span>Başlat</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={handleTestData}
-              disabled={!isConnected}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Test Verisi Gönder
-            </button>
+    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+      {/* Bağlantı Durumu ve Kontroller */}
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
+            isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              isConnected ? 'bg-green-500' : 'bg-red-500'
+            }`} />
+            <span className="text-sm font-medium">
+              {isConnected ? 'Gerçek Zamanlı Bağlantı Aktif' : 'Bağlantı Kesik'}
+            </span>
           </div>
-
-          {/* İstatistik Kartları */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {dashboardStats.map((stat, index) => (
-              <motion.div
-                key={stat.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+          
+          {isConnected && (
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">Simülasyon:</span>
+              <button
+                onClick={handleSimulationToggle}
+                className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  isSimulationRunning 
+                    ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                }`}
               >
-                <StatCard {...stat} />
-              </motion.div>
+                {isSimulationRunning ? (
+                  <>
+                    <StopIcon className="w-4 h-4" />
+                    <span>Durdur</span>
+                  </>
+                ) : (
+                  <>
+                    <PlayIcon className="w-4 h-4" />
+                    <span>Başlat</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={handleTestData}
+          disabled={!isConnected}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Test Verisi Gönder
+        </button>
+      </div>
+
+      {/* İstatistik Kartları */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {dashboardStats.map((stat, index) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <StatCard {...stat} />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Grafikler ve Cihaz Durumu */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Sıcaklık Grafiği */}
+        <motion.div
+          className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Sıcaklık Trendi (Son 24 Saat)
+          </h3>
+          <LineChart
+            data={combinedSensorData.filter(d => d.type === 'TEMPERATURE')}
+            height={300}
+          />
+        </motion.div>
+
+        {/* Nem Gauge */}
+        <motion.div
+          className="bg-white rounded-xl shadow-sm p-6"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Ortalama Nem
+          </h3>
+          <GaugeChart
+            value={stats?.averageHumidity || 0}
+            min={0}
+            max={100}
+            unit="%"
+            color="blue"
+          />
+        </motion.div>
+      </div>
+
+      {/* Cihaz Durumu ve Uyarılar */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <DeviceStatus devices={safeDevices} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <AlertList alerts={safeAlerts} />
+        </motion.div>
+      </div>
+
+      {/* Gerçek Zamanlı Veri Göstergesi */}
+      {isConnected && realTimeData.length > 0 && (
+        <motion.div
+          className="mt-6 bg-white rounded-xl shadow-sm p-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Son Gerçek Zamanlı Veriler
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {realTimeData.slice(-4).map((data) => (
+              <div
+                key={data.id}
+                className="p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500"
+              >
+                <div className="text-sm text-gray-600">{data.deviceId}</div>
+                <div className="text-lg font-semibold text-gray-900">
+                  {data.value} {data.unit}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {new Date(data.timestamp).toLocaleTimeString()}
+                </div>
+              </div>
             ))}
           </div>
-
-          {/* Grafikler ve Cihaz Durumu */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            {/* Sıcaklık Grafiği */}
-            <motion.div
-              className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Sıcaklık Trendi (Son 24 Saat)
-              </h3>
-              <LineChart
-                data={combinedSensorData.filter(d => d.type === 'TEMPERATURE')}
-                height={300}
-              />
-            </motion.div>
-
-            {/* Nem Gauge */}
-            <motion.div
-              className="bg-white rounded-xl shadow-sm p-6"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Ortalama Nem
-              </h3>
-              <GaugeChart
-                value={stats?.averageHumidity || 0}
-                min={0}
-                max={100}
-                unit="%"
-                color="blue"
-              />
-            </motion.div>
-          </div>
-
-          {/* Cihaz Durumu ve Uyarılar */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <DeviceStatus devices={safeDevices} />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <AlertList alerts={safeAlerts} />
-            </motion.div>
-          </div>
-
-          {/* Gerçek Zamanlı Veri Göstergesi */}
-          {isConnected && realTimeData.length > 0 && (
-            <motion.div
-              className="mt-6 bg-white rounded-xl shadow-sm p-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Son Gerçek Zamanlı Veriler
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {realTimeData.slice(-4).map((data) => (
-                  <div
-                    key={data.id}
-                    className="p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500"
-                  >
-                    <div className="text-sm text-gray-600">{data.deviceId}</div>
-                    <div className="text-lg font-semibold text-gray-900">
-                      {data.value} {data.unit}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(data.timestamp).toLocaleTimeString()}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </main>
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </main>
   );
 };
 

@@ -164,11 +164,12 @@ export const useSocket = (): UseSocketReturn => {
 
     return () => {
       disconnect();
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
+      const timeoutRef = reconnectTimeoutRef.current;
+      if (timeoutRef) {
+        clearTimeout(timeoutRef);
       }
     };
-  }, []);
+  }, [connect, disconnect]);
 
   // Bağlantı durumuna göre dashboard'a katıl
   useEffect(() => {

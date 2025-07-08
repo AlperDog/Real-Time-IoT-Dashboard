@@ -65,23 +65,36 @@ class AuthService {
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const { email, password } = credentials;
+    
+    console.log('🔐 Login attempt for email:', email);
 
     // Find user by email
     const user = await User.findOne({ email: email.toLowerCase() });
+    console.log('👤 User found:', user ? 'Yes' : 'No');
+    
     if (!user) {
+      console.log('❌ User not found for email:', email);
       throw new Error('Invalid email or password');
     }
 
     // Check if user is active
+    console.log('✅ User is active:', user.isActive);
     if (!user.isActive) {
+      console.log('❌ User account is deactivated');
       throw new Error('Account is deactivated');
     }
 
     // Verify password
+    console.log('🔑 Verifying password...');
     const isPasswordValid = await user.comparePassword(password);
+    console.log('🔑 Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('❌ Invalid password for user:', email);
       throw new Error('Invalid email or password');
     }
+
+    console.log('✅ Login successful for user:', email);
 
     // Update last login
     user.lastLogin = new Date();

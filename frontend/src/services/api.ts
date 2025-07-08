@@ -152,3 +152,23 @@ export const resetPassword = async (token: string, newPassword: string) => {
 export const checkHealth = async () => {
   return apiRequest('/health');
 }; 
+
+export const addDevice = async (device: IoTDevice) => {
+  return apiRequest<IoTDevice>('/api/devices', {
+    method: 'POST',
+    body: JSON.stringify(device),
+  });
+};
+
+export const updateDevice = async (id: string, device: Partial<IoTDevice>) => {
+  return apiRequest<IoTDevice>(`/api/devices/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(device),
+  });
+};
+
+export const deleteDevice = async (id: string) => {
+  return apiRequest<IoTDevice>(`/api/devices/${id}`, {
+    method: 'DELETE',
+  });
+}; 
