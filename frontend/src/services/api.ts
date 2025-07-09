@@ -1,4 +1,4 @@
-import { DashboardStats, IoTDevice, SensorData, Alert, ApiResponse } from '../sharedTypes';
+import { DashboardStats, IoTDevice, SensorData, Alert, ApiResponse, AnalyticsData } from '../sharedTypes';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
@@ -68,8 +68,8 @@ export const fetchAlerts = async (): Promise<Alert[]> => {
   return apiRequest<Alert[]>('/api/alerts');
 };
 
-export const fetchAnalytics = async (period: string = '24h') => {
-  return apiRequest(`/api/analytics?period=${period}`);
+export const fetchAnalytics = async (period: string = '24h'): Promise<AnalyticsData> => {
+  return apiRequest<AnalyticsData>(`/api/analytics?period=${period}`);
 };
 
 // Device control API functions

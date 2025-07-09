@@ -14,10 +14,12 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchDashboardStats, fetchDevices, fetchSensorData, fetchAlerts } from '../services/api';
 import { SensorData, DashboardStats, Alert, IoTDevice } from '../sharedTypes';
 import StatCard from '../components/StatCard';
-import LineChart from '../components/LineChart';
-import GaugeChart from '../components/GaugeChart';
+import LineChart from '../components/charts/LineChart';
+import GaugeChart from '../components/charts/GaugeChart';
+import BarChart from '../components/charts/BarChart';
 import DeviceStatus from '../components/DeviceStatus';
 import AlertList from '../components/AlertList';
+import { SensorType } from '../sharedTypes';
 
 const Dashboard: React.FC = () => {
   const { 
@@ -204,16 +206,31 @@ const Dashboard: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Sıcaklık Trendi (Son 24 Saat)
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Sıcaklık Trendi
+            </h3>
+            <div className="flex space-x-2">
+              <button className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200">
+                1 Saat
+              </button>
+              <button className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">
+                6 Saat
+              </button>
+              <button className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">
+                24 Saat
+              </button>
+            </div>
+          </div>
           <LineChart
-            data={combinedSensorData.filter(d => d.type === 'TEMPERATURE')}
+            data={combinedSensorData}
+            type={SensorType.TEMPERATURE}
             height={300}
+            timeRange="24h"
           />
         </motion.div>
 
-        {/* Nem Gauge */}
+        {/* Nem ve Diğer Gauge'lar */}
         <motion.div
           className="bg-white rounded-xl shadow-sm p-6"
           initial={{ opacity: 0, x: 20 }}
@@ -221,20 +238,42 @@ const Dashboard: React.FC = () => {
           transition={{ delay: 0.3 }}
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Ortalama Nem
+            Sensör Durumları
           </h3>
-          <GaugeChart
-            value={stats?.averageHumidity || 0}
-            min={0}
-            max={100}
-            unit="%"
-            color="blue"
-          />
+          <div className="space-y-6">
+            {/* Nem Gauge */}
+            <GaugeChart
+              value={stats?.averageHumidity || 0}
+              min={0}
+              max={100}
+              label="Ortalama Nem"
+              unit="%"
+              color="#3B82F6"
+              showTrend={true}
+              trendValue={stats?.averageHumidity ? stats.averageHumidity + 2.5 : 0}
+              trendDirection="up"
+              quality="good"
+            />
+            
+            {/* Sıcaklık Gauge */}
+            <GaugeChart
+              value={stats?.averageTemperature || 0}
+              min={-10}
+              max={50}
+              label="Ortalama Sıcaklık"
+              unit="°C"
+              color="#EF4444"
+              showTrend={true}
+              trendValue={stats?.averageTemperature ? stats.averageTemperature - 1.2 : 0}
+              trendDirection="down"
+              quality="excellent"
+            />
+          </div>
         </motion.div>
       </div>
 
       {/* Cihaz Durumu ve Uyarılar */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -249,6 +288,94 @@ const Dashboard: React.FC = () => {
           transition={{ delay: 0.5 }}
         >
           <AlertList alerts={safeAlerts} />
+        </motion.div>
+      </div>
+
+      {/* Ek Grafikler */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Cihaz Durumu Dağılımı */}
+        <motion.div
+          className="bg-white rounded-xl shadow-sm p-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Cihaz Durumu Dağılımı
+          </h3>
+          <BarChart
+            data={{
+              labels: ['Online', 'Offline', 'Hata', 'Bakım'],
+              datasets: [
+                {
+                  label: 'Cihaz Sayısı',
+                  data: [
+                    stats?.onlineDevices || 0,
+                    stats?.offlineDevices || 0,
+                    0, // Error devices
+                    0  // Maintenance devices
+                  ],
+                  backgroundColor: [
+                    '#10B981', // Green for online
+                    '#6B7280', // Gray for offline
+                    '#EF4444', // Red for error
+                    '#F59E0B'  // Yellow for maintenance
+                  ]
+                }
+              ]
+            }}
+            height={250}
+          />
+        </motion.div>
+
+        {/* Sensör Veri Kalitesi */}
+        <motion.div
+          className="bg-white rounded-xl shadow-sm p-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Sensör Veri Kalitesi
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <GaugeChart
+              value={85}
+              max={100}
+              label="Sıcaklık Sensörleri"
+              unit="%"
+              color="#10B981"
+              quality="excellent"
+              size={100}
+            />
+            <GaugeChart
+              value={72}
+              max={100}
+              label="Nem Sensörleri"
+              unit="%"
+              color="#3B82F6"
+              quality="good"
+              size={100}
+            />
+            <GaugeChart
+              value={95}
+              max={100}
+              label="Basınç Sensörleri"
+              unit="%"
+              color="#8B5CF6"
+              quality="excellent"
+              size={100}
+            />
+            <GaugeChart
+              value={68}
+              max={100}
+              label="Işık Sensörleri"
+              unit="%"
+              color="#F59E0B"
+              quality="fair"
+              size={100}
+            />
+          </div>
         </motion.div>
       </div>
 
