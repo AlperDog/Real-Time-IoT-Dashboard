@@ -26,7 +26,7 @@ const AppContent: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return (
+  return (
       <Router>
         <Routes>
           <Route path="/auth" element={<Auth />} />
@@ -43,19 +43,19 @@ const AppContent: React.FC = () => {
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
           <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-            <Routes>
+          <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/devices" element={<Devices />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
+          </Routes>
           </main>
         </div>
-      </div>
-    </Router>
+        </div>
+      </Router>
   );
 };
 

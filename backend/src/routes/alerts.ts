@@ -52,7 +52,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Acknowledge alert
-router.put('/:id/acknowledge', async (req, res) => {
+router.post('/:id/acknowledge', async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -67,6 +67,27 @@ router.put('/:id/acknowledge', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to acknowledge alert',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Resolve alert
+router.post('/:id/resolve', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const response: ApiResponse = {
+      success: true,
+      message: 'Alert resolved successfully',
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to resolve alert',
       timestamp: new Date().toISOString()
     });
   }

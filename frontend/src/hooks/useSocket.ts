@@ -169,7 +169,8 @@ export const useSocket = (): UseSocketReturn => {
         clearTimeout(timeoutRef);
       }
     };
-  }, [connect, disconnect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Bağlantı durumuna göre dashboard'a katıl
   useEffect(() => {
